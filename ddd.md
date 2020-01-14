@@ -1,7 +1,7 @@
 # Domain Driven Design
 
-# Define Events
+## Define Events
+- post added
+## Define Commands
 
-# Define Commands
-
-# Define Entities and Value Objects
+## Define Entities and Value Objects
