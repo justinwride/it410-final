@@ -1,0 +1,326 @@
+openapi: 3.0.2
+info:
+  title: Skill Struck Share
+  description: The project sharing place
+  version: '1.0'
+paths:
+  /posts:
+    get:
+      summary: Get a feed of posts.
+      tags:
+        - Posts
+      parameters:
+        - $ref: '#/components/parameters/PostFieldSets'
+      responses:
+        200:
+          description: A list of posts.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+    post:
+      summary: Create a post.
+      tags:
+        - Posts
+      parameters:
+        - $ref: '#/components/parameters/PostFieldSets'
+      responses:
+        200:
+          description: Successful create.
+  /posts/{postId}:
+    parameters:
+      - $ref: '#/components/parameters/PostId'
+    get:
+      summary: Get a single post.
+      tags:
+        - Posts
+      parameters:
+        - $ref: '#/components/parameters/PostFieldSets'
+      responses:
+        200:
+          description: Post retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+    delete:
+      summary: Delete a post.
+      tags:
+        - Posts
+      parameters:
+        - $ref: '#/components/parameters/PostId'
+      responses:
+        200:
+          description: Successful delete.
+
+  /comment/{postId}:
+    parameters:
+      - $ref: '#/components/parameters/PostId'
+    post:
+      summary: Create a comment for a post.
+      tags:
+        - Comments
+      requestBody:
+        $ref: '#/components/requestBodies/Comment'
+      responses:
+        201:
+          description: Comment posted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentBasic'
+  /posts/{postId}/comments:
+    parameters:
+      - $ref: '#/components/parameters/PostId'
+    get:
+      summary: Get a list of comments associated with this post.
+      tags:
+        - Comments
+      parameters:
+        - $ref: '#/components/parameters/StartDate'
+        - $ref: '#/components/parameters/EndDate'
+      responses:
+        200:
+          description: A list of comments.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+  /comments/{commentId}:
+    parameters:
+      - $ref: '#/components/parameters/CommentId'
+    put:
+      summary: Edit the text of a comment.
+      tags:
+        - Comments
+      requestBody:
+        $ref: '#/components/requestBodies/Comment'
+      responses:
+        200:
+          description: Comment text set.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+    delete:
+      summary: Delete a comment.
+      tags:
+        - Comments
+      responses:
+        204:
+          description: Comment removed.
+  /login:
+    post:
+      summary: Log in
+      tags:
+        - Users
+      requestBody:
+        $ref: '#/components/requestBodies/UserLogin'
+      responses:
+        200:
+          description: Log in successful.
+  /logout:
+    get:
+      summary: Log out
+      tags:
+        - Users
+      responses:
+        200:
+          description: Log out successful.
+    
+  /users:
+    post:
+      summary: Create a user
+      tags:
+        - Users
+      requestBody:
+        $ref: '#/components/requestBodies/UserLogin'
+      responses:
+        201:
+          description: User created.
+  /users/{userId}:
+    parameters:
+      - $ref: '#/components/parameters/UserId'
+    put:
+      summary: Edit a user
+      tags:
+        - Users
+      requestBody:
+        $ref: '#/components/requestBodies/UserLogin'
+      responses:
+        201:
+          description: User updated.
+    delete:
+      summary: Delete a user
+      tags:
+        - Users
+      responses:
+        201:
+          description: User deleted.
+  
+  /users/{userId}/favorite:
+    parameters:
+      - $ref: '#/components/parameters/UserId'
+    put:
+      summary: Favorite a user
+      tags:
+        - Users
+      requestBody:
+        $ref: '#/components/requestBodies/UserFavorite'
+      responses:
+        201:
+          description: User favorited.
+    delete:
+      summary: Delete a user
+      tags:
+        - Users
+      responses:
+        201:
+          description: User unfavorited.
+      
+components:
+  parameters:
+    PostId:
+      name: postId
+      in: path
+      required: true
+      schema:
+        type: string
+    PostFieldSets:
+      name: fieldsets
+      in: query
+      schema:
+        type: array
+        default: ['basic']
+        items:
+          type: string
+          enum:
+            - basic
+            - metadata
+    CommentId:
+      name: commentId
+      in: path
+      required: true
+      schema:
+        type: string
+    EndDate:
+      name: endDate
+      in: query
+      schema:
+        type: string
+        format: date-time
+    UserId:
+      name: userId
+      in: path
+      required: true
+      schema:
+        type: string
+    MessageId:
+      name: messageId
+      in: path
+      required: true
+      schema:
+        type: string
+    MessageFieldsets:
+      name: fieldsets
+      in: query
+      schema:
+        type: array
+        default: ['basic']
+        items:
+          type: string
+          enum:
+            - basic
+            - comments
+    StartDate:
+      name: startDate
+      in: query
+      schema:
+        type: string
+        format: date-time
+  headers:
+    PostLocation:
+      description: The URL to retrieve the created resource from.
+      schema:
+        type: string
+  requestBodies:
+    Comment:
+      content:
+        application/json:
+          schema:
+            type: string
+    UserLogin:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserLogin'
+    UserDelete:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserDelete'
+    UserFavorite:
+      content:
+        string:
+          schema:
+            $ref: '#/components/schemas/UserFavorite'
+  schemas:
+    Post:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+    Comment:
+      allOf:
+        - type: object
+          properties:
+            messageId:
+              description: The message that this comment belongs to.
+              type: string
+              readOnly: true
+    CommentBasic:
+      allOf:
+        - type: object
+          required:
+            - channelId
+          properties:
+            channelId:
+              description: The channel ID that this message belong to.
+              type: string
+              readOnly: true
+    User:
+      type: object
+      properties:
+        email:
+          description: The user's email address.
+          type: string
+        name:
+          description: The user name, displayed on messages.
+          type: string
+        avatar:
+          description: The URL to the user's avatar.
+          type: string
+    UserLogin:
+      type: object
+      properties:
+        email:
+          description: The user's email address.
+          type: string
+        password:
+          description: The user's password.
+          type: string
+          format: password
+    UserDelete:
+      type: object
+      properties:
+        email:
+          description: The user's email address.
+          type: string
+    UserFavorite:
+      type: string
