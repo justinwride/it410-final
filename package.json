@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha test",
+    "test-watch": "mocha --watch test"
   },
   "repository": {
     "type": "git",
@@ -18,7 +19,12 @@
   "homepage": "https://github.com/justinwride/it410-final#readme",
   "dependencies": {
     "express": "^4.17.1",
+    "mongodb": "^3.5.3",
     "openapi-enforcer": "^1.8.2",
     "openapi-enforcer-middleware": "^1.2.2"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^7.0.1"
   }
 }
