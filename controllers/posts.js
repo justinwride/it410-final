@@ -1,6 +1,10 @@
 const express = require('express');
+const mongoose = require('mongoose');
+const User = require('../models/user');
 
 const router = express.Router();
+
+// read, write, update, delete
 
 // get posts
 router.get('/posts', (req, res) => {
@@ -52,18 +56,46 @@ router.get('/logout', (req, res) => {
     res.send('success');
 });
 
+// get users
+router.get('/users', (req, res) => {
+    User.find((err, users) => {
+        console.log(users, typeof (users));
+        res.send(JSON.stringify(users));
+    });
+});
+
 // create a user
 router.post('/users', (req, res) => {
-    res.send('success');
+    const name = req.body.name;
+    const email = req.body.email;
+    const avatar = req.body.avatar;
+    const user = new User({
+        name: name,
+        email: email,
+        avatar: avatar
+    });
+    user.save();
+    res.send('User added');
 });
 
 // edit a user
 router.put('/users/:userId', (req, res) => {
-    res.send('success');
+    const id = req.params.userId;
+    const update = {
+        name: req.body.name,
+        email: req.body.email,
+        avatar: req.body.avatar
+    }
+    User.findByIdAndUpdate(id, update);
+    res.send('User updated');
 });
 
 // delete a user
-router.post('/users/:userId', (req, res) => {
+router.delete('/users/:userId', (req, res) => {
+    const id = req.params.userId;
+    User.findByIdAndDelete(id).catch(err => {
+        console.log(err);
+    });
     res.send('success');
 });
 
