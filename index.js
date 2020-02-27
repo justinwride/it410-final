@@ -8,13 +8,18 @@ const port = 5000;
 // mongo
 // https://www.npmjs.com/package/mongodb
 const MongoClient = require('mongodb').MongoClient;
-const url = 'mongodb://localhost:27017';
+// const url = 'mongodb://localhost:27017';
+const url = 'mongodb://mongo:27017';
 
 MongoClient.connect(url, function (err, client) {
     // assert.equal(null, err);
-    console.log("Connected successfully to server");
-    const db = client.db('myProject');
-    client.close();
+    if (err) {
+        console.log('Could not connect');
+    } else {
+        console.log('Successfully connected to Mongo!');
+    }
+    // const db = client.db('myProject');
+    // client.close();
 });
 
 app.use(express.json());
